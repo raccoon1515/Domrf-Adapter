@@ -10,10 +10,10 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 
-class DocumentParser(private val path: String) {
+class DocumentParser(private val file: File) {
 
     private val pdfParser: PDFParser by lazy {
-        PDFParser(getFile(path))
+        PDFParser(wrapFile(file))
     }
 
     fun parse(): Payments {
@@ -77,11 +77,7 @@ class DocumentParser(private val path: String) {
                 .toInt()
         }
 
-        private fun getFile(path: String): RandomAccessFile {
-            val file = File(path)
-            if (!file.isFile) throw IllegalArgumentException("File $path is not a file or does not exist")
-            return RandomAccessFile(file, "r")
-        }
+        private fun wrapFile(file: File): RandomAccessFile = RandomAccessFile(file, "r")
 
         private fun parseLine(line: CharSequence): PaymentRecord {
             val groups = tableRowRegex.find(line)?.groups
